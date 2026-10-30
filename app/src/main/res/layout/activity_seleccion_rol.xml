@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/surface_card"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:navigationContentDescription="@string/volver"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:title="@string/crear_cuenta" />
+
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/paso_1_de_2"
+                android:textAppearance="@style/TextAppearance.Autoque.Step" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/rol_titulo"
+                android:textAppearance="@style/TextAppearance.Autoque.Headline" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/rol_subtitulo"
+                android:textAppearance="@style/TextAppearance.Autoque.Body" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardCliente"
+                style="@style/Autoque.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:checkable="true"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardBackgroundColor="@color/role_card_bg"
+                app:cardForegroundColor="@android:color/transparent"
+                app:checkedIcon="@null"
+                app:strokeColor="@color/role_card_stroke"
+                app:strokeWidth="2dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="20dp">
+
+                    <ImageView
+                        android:id="@+id/icCliente"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:background="@drawable/bg_circle_yellow"
+                        android:importantForAccessibility="no"
+                        android:padding="14dp"
+                        android:src="@drawable/ic_car"
+                        app:tint="@color/autoque_black" />
+
+                    <RadioButton
+                        android:id="@+id/rbCliente"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:clickable="false"
+                        android:focusable="false"
+                        android:importantForAccessibility="no" />
+
+                    <TextView
+                        android:id="@+id/tvCliente"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/icCliente"
+                        android:layout_marginTop="16dp"
+                        android:text="@string/rol_cliente"
+                        android:textAppearance="@style/TextAppearance.Autoque.CardTitle" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/tvCliente"
+                        android:layout_marginTop="6dp"
+                        android:text="@string/rol_cliente_desc"
+                        android:textAppearance="@style/TextAppearance.Autoque.Body" />
+                </RelativeLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardTaller"
+                style="@style/Autoque.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:checkable="true"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardBackgroundColor="@color/role_card_bg"
+                app:cardForegroundColor="@android:color/transparent"
+                app:checkedIcon="@null"
+                app:strokeColor="@color/role_card_stroke"
+                app:strokeWidth="2dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="20dp">
+
+                    <ImageView
+                        android:id="@+id/icTaller"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:background="@drawable/bg_circle_black"
+                        android:importantForAccessibility="no"
+                        android:padding="14dp"
+                        android:src="@drawable/ic_wrench"
+                        app:tint="@color/autoque_yellow" />
+
+                    <RadioButton
+                        android:id="@+id/rbTaller"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:clickable="false"
+                        android:focusable="false"
+                        android:importantForAccessibility="no" />
+
+                    <TextView
+                        android:id="@+id/tvTaller"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/icTaller"
+                        android:layout_marginTop="16dp"
+                        android:text="@string/rol_taller"
+                        android:textAppearance="@style/TextAppearance.Autoque.CardTitle" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/tvTaller"
+                        android:layout_marginTop="6dp"
+                        android:text="@string/rol_taller_desc"
+                        android:textAppearance="@style/TextAppearance.Autoque.Body" />
+                </RelativeLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </ScrollView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnContinuar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:enabled="false"
+        android:text="@string/continuar" />
+
+    <TextView
+        android:id="@+id/tvAyudaRol"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
+        android:text="@string/selecciona_rol"
+        android:textAppearance="@style/TextAppearance.Autoque.Helper" />
+</LinearLayout>

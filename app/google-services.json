@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1000112538925",
+    "project_id": "autoque-37200",
+    "storage_bucket": "autoque-37200.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1000112538925:android:b114e7728c43980074ffa4",
+        "android_client_info": {
+          "package_name": "com.example.autoque"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDe27s0ALCzWl0omf8ghZOKAgm4S1O5ptM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

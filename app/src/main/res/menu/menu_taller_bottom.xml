@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_solicitudes"
+        android:icon="@drawable/ic_list"
+        android:title="@string/nav_solicitudes" />
+    <item
+        android:id="@+id/nav_atenciones"
+        android:icon="@drawable/ic_task_done"
+        android:title="@string/nav_atenciones" />
+</menu>

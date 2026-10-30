@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/surface_card"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:navigationContentDescription="@string/volver"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:title="@string/estado_solicitud" />
+
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <FrameLayout
+                android:layout_width="112dp"
+                android:layout_height="112dp"
+                android:layout_marginTop="8dp">
+
+                <ImageView
+                    android:id="@+id/ivEstado"
+                    android:layout_width="88dp"
+                    android:layout_height="88dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_circle_yellow"
+                    android:importantForAccessibility="no"
+                    android:padding="24dp"
+                    android:src="@drawable/ic_search"
+                    app:tint="@color/autoque_black" />
+
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/progressBuscando"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:indeterminate="true"
+                    app:indicatorColor="@color/autoque_black"
+                    app:indicatorInset="0dp"
+                    app:indicatorSize="104dp"
+                    app:trackThickness="3dp" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/tvTitulo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.Autoque.Headline"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/tvSubtitulo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.Autoque.Body" />
+
+            <TextView
+                android:id="@+id/tvBadge"
+                style="@style/Autoque.Badge"
+                android:layout_marginTop="12dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <View
+                        android:id="@+id/paso1"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:background="@drawable/bg_step_inactive" />
+
+                    <TextView
+                        android:id="@+id/tvPaso1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="@string/estado_pendiente"
+                        android:textSize="13sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <View
+                        android:id="@+id/paso2"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:background="@drawable/bg_step_inactive" />
+
+                    <TextView
+                        android:id="@+id/tvPaso2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="@string/estado_aceptada"
+                        android:textSize="13sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <View
+                        android:id="@+id/paso3"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:background="@drawable/bg_step_inactive" />
+
+                    <TextView
+                        android:id="@+id/tvPaso3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="@string/estado_finalizada"
+                        android:textSize="13sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Autoque.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp">
+
+                <LinearLayout
+                    android:id="@+id/contenedorDetalle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp" />
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/panelCancelar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="24dp"
+        android:paddingBottom="16dp"
+        android:visibility="gone">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCancelar"
+            style="@style/Widget.Autoque.Button.Outlined"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/cancelar_solicitud" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="@string/cancelar_nota"
+            android:textAppearance="@style/TextAppearance.Autoque.Helper" />
+    </LinearLayout>
+</LinearLayout>

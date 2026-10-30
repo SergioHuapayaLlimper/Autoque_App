@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/surface_card"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:navigationContentDescription="@string/volver"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:title="@string/solicitar_asistencia" />
+
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/seccion_contacto"
+                android:textAppearance="@style/TextAppearance.Autoque.Section" />
+
+            <TextView
+                style="@style/Autoque.FieldLabel"
+                android:text="@string/nombre_completo" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilNombre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:helperText="@string/autocompletado_perfil">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_nombre"
+                    android:inputType="textPersonName|textCapWords" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                style="@style/Autoque.FieldLabel"
+                android:text="@string/telefono" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilTelefono"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:prefixText="@string/prefijo_peru">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_telefono"
+                    android:digits="0123456789"
+                    android:inputType="number"
+                    android:maxLength="9" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:text="@string/seccion_ubicacion"
+                android:textAppearance="@style/TextAppearance.Autoque.Section" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_info_box"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
+                <ImageView
+                    android:id="@+id/ivGps"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bg_circle_black"
+                    android:importantForAccessibility="no"
+                    android:padding="9dp"
+                    android:src="@drawable/ic_location"
+                    app:tint="@color/autoque_yellow" />
+
+                <TextView
+                    android:id="@+id/tvGpsEstado"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:textAppearance="@style/TextAppearance.Autoque.Label" />
+
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/progressGps"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:indeterminate="true"
+                    android:visibility="gone"
+                    app:indicatorColor="@color/autoque_black"
+                    app:indicatorSize="24dp" />
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnUsarGps"
+                style="@style/Widget.Autoque.Button.Outlined.Small"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/usar_mi_ubicacion"
+                app:icon="@drawable/ic_my_location"
+                app:iconGravity="textStart"
+                app:iconTint="@color/autoque_black" />
+
+            <TextView
+                style="@style/Autoque.FieldLabel"
+                android:text="@string/direccion_exacta" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilDireccion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:helperText="@string/direccion_ayuda">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_direccion"
+                    android:inputType="textPostalAddress|textCapWords" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                style="@style/Autoque.FieldLabel"
+                android:text="@string/distrito_incidente" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilDistrito"
+                style="@style/Widget.Autoque.TextInputLayout.Dropdown"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/actvDistrito"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_distrito"
+                    android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:text="@string/seccion_motivo"
+                android:textAppearance="@style/TextAppearance.Autoque.Section" />
+
+            <TextView
+                style="@style/Autoque.FieldLabel"
+                android:text="@string/elige_incidente" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipsIncidente"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:chipSpacingHorizontal="8dp"
+                app:selectionRequired="true"
+                app:singleSelection="true" />
+
+            <TextView
+                android:id="@+id/tvErrorIncidente"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/selecciona_incidente"
+                android:textColor="@color/error"
+                android:textSize="13sp"
+                android:visibility="gone" />
+
+            <TextView
+                style="@style/Autoque.FieldLabel"
+                android:text="@string/describe_problema" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilDescripcion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:counterEnabled="true"
+                app:counterMaxLength="300"
+                app:helperText="@string/describe_ayuda">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="top"
+                    android:hint="@string/hint_describe"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:maxLength="300"
+                    android:minLines="3" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/bg_cost_box"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/costo_aproximado"
+                            android:textAppearance="@style/TextAppearance.Autoque.CardTitle" />
+
+                        <TextView
+                            android:id="@+id/tvCostoSegun"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/costo_sin_seleccion"
+                            android:textAppearance="@style/TextAppearance.Autoque.Label" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvCosto"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="S/ —"
+                        android:textColor="@color/text_primary"
+                        android:textSize="26sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/costo_nota"
+                    android:textAppearance="@style/TextAppearance.Autoque.Helper" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnEnviar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:text="@string/enviar_solicitud" />
+</LinearLayout>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="autoque_yellow">#FFCC00</color>
+    <color name="autoque_yellow_dark">#E6B800</color>
+    <color name="autoque_yellow_soft">#FFF6CC</color>
+    <color name="autoque_black">#0D0D0D</color>
+    <color name="autoque_white">#FFFFFF</color>
+
+    <color name="surface_background">#F6F6F6</color>
+    <color name="surface_card">#FFFFFF</color>
+    <color name="surface_muted">#EDEDED</color>
+    <color name="outline">#D6D6D6</color>
+    <color name="text_primary">#141414</color>
+    <color name="text_secondary">#6B6B6B</color>
+    <color name="text_hint">#9E9E9E</color>
+    <color name="error">#C62828</color>
+    <color name="success">#2E7D32</color>
+
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>

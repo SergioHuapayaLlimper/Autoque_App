@@ -45,9 +45,18 @@
         <activity android:name=".ui.auth.SeleccionRolActivity" />
         <activity android:name=".ui.auth.RegistroClienteActivity" />
         <activity android:name=".ui.auth.RegistroTallerActivity" />
-        <activity android:name=".ui.cliente.ClienteHomeActivity" />
+        <activity
+            android:name=".ui.cliente.ClienteHomeActivity"
+            android:launchMode="singleTop" />
         <activity android:name=".ui.cliente.SolicitarAsistenciaActivity" />
         <activity android:name=".ui.cliente.EstadoSolicitudActivity" />
+        <activity android:name=".ui.cliente.CalificarTallerActivity" />
+        <activity android:name=".ui.cliente.CalificarAppActivity" />
+        <activity android:name=".ui.cliente.PerfilTallerActivity" />
+        <activity android:name=".ui.cliente.EditarPerfilActivity" />
+
+        <activity android:name=".ui.common.CambiarPasswordActivity" />
+        <activity android:name=".ui.common.AyudaActivity" />
         <activity
             android:name=".ui.taller.TallerHomeActivity"
             android:launchMode="singleTop" />

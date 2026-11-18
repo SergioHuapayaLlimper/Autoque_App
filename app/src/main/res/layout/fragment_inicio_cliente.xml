@@ -33,7 +33,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <com.google.android.gms.maps.MapView
+                <com.example.autoque.ui.common.MapaEnScroll
                     android:id="@+id/mapa"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />

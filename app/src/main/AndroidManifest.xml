@@ -18,7 +18,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Autoque">
-
+        <activity
+            android:name=".cliente_perfil"
+            android:exported="false" />
         <activity
             android:name=".ui.Splash"
             android:exported="true"
@@ -29,22 +31,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".ui.MainActivity"
             android:exported="false"
             android:theme="@style/Theme.Autoque.Welcome" />
-
         <activity android:name=".ui.auth.LoginActivity" />
         <activity android:name=".ui.auth.RecuperarPasswordActivity" />
         <activity android:name=".ui.auth.SeleccionRolActivity" />
         <activity android:name=".ui.auth.RegistroClienteActivity" />
         <activity android:name=".ui.auth.RegistroTallerActivity" />
-
         <activity android:name=".ui.cliente.ClienteHomeActivity" />
         <activity android:name=".ui.cliente.SolicitarAsistenciaActivity" />
         <activity android:name=".ui.cliente.EstadoSolicitudActivity" />
-
         <activity
             android:name=".ui.taller.TallerHomeActivity"
             android:launchMode="singleTop" />

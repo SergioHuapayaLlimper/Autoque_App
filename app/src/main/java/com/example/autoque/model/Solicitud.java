@@ -1,5 +1,7 @@
 package com.example.autoque.model;
 
+import com.google.firebase.firestore.DocumentId;
+
 public class Solicitud {
 
     public static final String PENDIENTE = "PENDIENTE";
@@ -7,8 +9,10 @@ public class Solicitud {
     public static final String FINALIZADA = "FINALIZADA";
     public static final String CANCELADA = "CANCELADA";
 
-    private long id;
-    private long clienteId;
+    @DocumentId
+    private String id;
+    private long numero;
+    private String clienteUid;
     private String nombreContacto;
     private String telefonoContacto;
     private String direccion;
@@ -20,26 +24,39 @@ public class Solicitud {
     private int costoMin;
     private int costoMax;
     private String estado = PENDIENTE;
-    private Long tallerId;
+    private String tallerUid;
     private String nombreTaller;
+    private String telefonoTaller;
     private long creadoEn;
     private Long aceptadoEn;
     private Long finalizadoEn;
+    private boolean calificada;
 
-    public long getId() {
+    public Solicitud() {
+    }
+
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public long getClienteId() {
-        return clienteId;
+    public long getNumero() {
+        return numero;
     }
 
-    public void setClienteId(long clienteId) {
-        this.clienteId = clienteId;
+    public void setNumero(long numero) {
+        this.numero = numero;
+    }
+
+    public String getClienteUid() {
+        return clienteUid;
+    }
+
+    public void setClienteUid(String clienteUid) {
+        this.clienteUid = clienteUid;
     }
 
     public String getNombreContacto() {
@@ -130,12 +147,12 @@ public class Solicitud {
         this.estado = estado;
     }
 
-    public Long getTallerId() {
-        return tallerId;
+    public String getTallerUid() {
+        return tallerUid;
     }
 
-    public void setTallerId(Long tallerId) {
-        this.tallerId = tallerId;
+    public void setTallerUid(String tallerUid) {
+        this.tallerUid = tallerUid;
     }
 
     public String getNombreTaller() {
@@ -144,6 +161,14 @@ public class Solicitud {
 
     public void setNombreTaller(String nombreTaller) {
         this.nombreTaller = nombreTaller;
+    }
+
+    public String getTelefonoTaller() {
+        return telefonoTaller;
+    }
+
+    public void setTelefonoTaller(String telefonoTaller) {
+        this.telefonoTaller = telefonoTaller;
     }
 
     public long getCreadoEn() {
@@ -170,6 +195,14 @@ public class Solicitud {
         this.finalizadoEn = finalizadoEn;
     }
 
+    public boolean isCalificada() {
+        return calificada;
+    }
+
+    public void setCalificada(boolean calificada) {
+        this.calificada = calificada;
+    }
+
     public String rangoCosto() {
         return "S/ " + costoMin + " – " + costoMax;
     }
@@ -178,8 +211,12 @@ public class Solicitud {
         return latitud != null && longitud != null;
     }
 
-    public boolean asignadaA(long idTaller) {
-        return tallerId != null && tallerId == idTaller;
+    public boolean asignadaA(String uidTaller) {
+        return tallerUid != null && tallerUid.equals(uidTaller);
+    }
+
+    public boolean activa() {
+        return PENDIENTE.equals(estado) || ACEPTADA.equals(estado);
     }
 
     public static String etiquetaEstado(String estado) {

@@ -15,6 +15,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.autoque.R;
 import com.example.autoque.data.AuthRepository;
+import com.example.autoque.util.SeguimientoSolicitudes;
 import com.example.autoque.util.SessionManager;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
@@ -55,8 +56,9 @@ public abstract class BaseActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
     }
 
-    protected void cerrarSesion() {
+    public void cerrarSesion() {
         session.cerrar();
+        SeguimientoSolicitudes.detener();
         new AuthRepository(this).cerrarSesion();
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -70,7 +72,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected boolean exigirRol(String rol) {
-        if (!session.haySesion() || !rol.equals(session.getRol())) {
+        if (!session.haySesion() || !rol.equals(session.getRol())
+                || !AuthRepository.haySesionFirebase()) {
             cerrarSesion();
             return false;
         }

@@ -70,7 +70,7 @@ public class LoginActivity extends BaseActivity {
             @Override
             public void onExito(Usuario usuario) {
                 if (isFinishing()) return;
-                session.iniciar(usuario.getId(), usuario.getRol());
+                session.iniciar(usuario);
                 MainActivity.abrirMenuPrincipal(LoginActivity.this, usuario.getRol());
                 finish();
             }

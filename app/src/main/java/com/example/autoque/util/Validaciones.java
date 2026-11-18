@@ -26,6 +26,12 @@ public final class Validaciones {
         return s.replaceAll("\\D", "");
     }
 
+    public static String ultimos9Digitos(String telefono) {
+        if (telefono == null) return "";
+        String d = soloDigitos(telefono);
+        return d.length() > 9 ? d.substring(d.length() - 9) : d;
+    }
+
     public static String formatearCelular(String telefono) {
         String d = soloDigitos(telefono);
         if (d.length() != 9) return telefono;

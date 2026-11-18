@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.example.autoque.R;
-import com.example.autoque.data.UsuarioDao;
 import com.example.autoque.databinding.ActivityRegistroClienteBinding;
 import com.example.autoque.model.Usuario;
 import com.example.autoque.ui.BaseActivity;
@@ -14,7 +13,6 @@ import com.example.autoque.util.Validaciones;
 public class RegistroClienteActivity extends BaseActivity {
 
     private ActivityRegistroClienteBinding binding;
-    private UsuarioDao usuarioDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,32 +20,14 @@ public class RegistroClienteActivity extends BaseActivity {
         binding = ActivityRegistroClienteBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         setupToolbarConBack(binding.toolbar);
-        usuarioDao = new UsuarioDao(this);
 
         Validaciones.limpiarErrorAlEscribir(binding.tilNombre, binding.tilTelefono,
                 binding.tilEmail, binding.tilPassword);
 
-        binding.tilEmail.getEditText().setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus) validarEmail();
-        });
         binding.cbTerminos.setOnCheckedChangeListener((b, checked) -> {
             if (checked) binding.tvErrorTerminos.setVisibility(View.GONE);
         });
         binding.btnCrearCuenta.setOnClickListener(v -> registrar());
-    }
-
-    private boolean validarEmail() {
-        String email = Validaciones.texto(binding.tilEmail);
-        if (!Validaciones.esEmailValido(email)) {
-            binding.tilEmail.setError(getString(R.string.correo_invalido));
-            return false;
-        }
-        if (usuarioDao.existeEmail(email)) {
-            binding.tilEmail.setError(getString(R.string.correo_registrado));
-            return false;
-        }
-        binding.tilEmail.setError(null);
-        return true;
     }
 
     private void registrar() {
@@ -61,7 +41,13 @@ public class RegistroClienteActivity extends BaseActivity {
             binding.tilTelefono.setError(null);
         }
 
-        ok &= validarEmail();
+        String email = Validaciones.texto(binding.tilEmail);
+        if (!Validaciones.esEmailValido(email)) {
+            binding.tilEmail.setError(getString(R.string.correo_invalido));
+            ok = false;
+        } else {
+            binding.tilEmail.setError(null);
+        }
 
         String password = binding.tilPassword.getEditText().getText().toString();
         if (password.length() < 6) {
@@ -77,16 +63,13 @@ public class RegistroClienteActivity extends BaseActivity {
         }
         if (!ok) return;
 
-        String nombre = Validaciones.texto(binding.tilNombre);
-        String email = Validaciones.texto(binding.tilEmail);
+        Usuario usuario = new Usuario(null, Usuario.ROL_CLIENTE, Validaciones.texto(binding.tilNombre),
+                Validaciones.formatearCelular(telefono), email.toLowerCase());
         RegistroConFirebase.registrar(this, binding.btnCrearCuenta, R.string.crear_cuenta,
-                binding.tilEmail, binding.tilPassword, email, password,
-                uid -> usuarioDao.registrarCliente(nombre, Validaciones.formatearCelular(telefono),
-                        email, password, uid),
-                id -> {
+                binding.tilEmail, binding.tilPassword, usuario, null, password, registrado -> {
                     RegistroConFirebase.bienvenida(this, R.string.cuenta_creada);
-                    session.iniciar(id, Usuario.ROL_CLIENTE);
-                    MainActivity.abrirMenuPrincipal(this, Usuario.ROL_CLIENTE);
+                    session.iniciar(registrado);
+                    MainActivity.abrirMenuPrincipal(this, registrado.getRol());
                     finish();
                 });
     }

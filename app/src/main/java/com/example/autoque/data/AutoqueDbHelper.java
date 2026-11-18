@@ -10,7 +10,7 @@ public class AutoqueDbHelper extends SQLiteOpenHelper {
 
     private static final String TAG = "AutoqueDb";
     public static final String DB_NAME = "autoque.db";
-    public static final int DB_VERSION = 2;
+    public static final int DB_VERSION = 3;
 
     private static AutoqueDbHelper instance;
 
@@ -26,59 +26,20 @@ public class AutoqueDbHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onConfigure(SQLiteDatabase db) {
-        super.onConfigure(db);
-        db.setForeignKeyConstraintsEnabled(true);
+    public void onCreate(SQLiteDatabase db) {
+        crearPerfilLocal(db);
     }
 
-    @Override
-    public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE usuario ("
-                + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+    private static void crearPerfilLocal(SQLiteDatabase db) {
+        db.execSQL("CREATE TABLE IF NOT EXISTS perfil_local ("
+                + "uid TEXT PRIMARY KEY, "
                 + "rol TEXT NOT NULL CHECK (rol IN ('CLIENTE', 'TALLER')), "
                 + "nombre TEXT NOT NULL, "
-                + "telefono TEXT NOT NULL, "
-                + "email TEXT NOT NULL UNIQUE COLLATE NOCASE, "
-                + "password_hash TEXT NOT NULL, "
-                + "password_salt TEXT NOT NULL, "
-                + "creado_en INTEGER NOT NULL, "
-                + "firebase_uid TEXT UNIQUE)");
-
-        db.execSQL("CREATE TABLE taller ("
-                + "usuario_id INTEGER PRIMARY KEY REFERENCES usuario(id) ON DELETE CASCADE, "
-                + "nombre_taller TEXT NOT NULL, "
-                + "distrito TEXT NOT NULL, "
-                + "direccion TEXT NOT NULL, "
-                + "otros_servicios TEXT)");
-        db.execSQL("CREATE INDEX idx_taller_distrito ON taller(distrito)");
-
-        db.execSQL("CREATE TABLE taller_servicio ("
-                + "taller_id INTEGER NOT NULL REFERENCES taller(usuario_id) ON DELETE CASCADE, "
-                + "servicio TEXT NOT NULL, "
-                + "PRIMARY KEY (taller_id, servicio))");
-
-        db.execSQL("CREATE TABLE solicitud ("
-                + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + "cliente_id INTEGER NOT NULL REFERENCES usuario(id), "
-                + "nombre_contacto TEXT NOT NULL, "
-                + "telefono_contacto TEXT NOT NULL, "
-                + "direccion TEXT NOT NULL, "
-                + "distrito TEXT NOT NULL, "
-                + "latitud REAL, "
-                + "longitud REAL, "
-                + "tipo_incidente TEXT NOT NULL, "
-                + "descripcion TEXT, "
-                + "costo_min INTEGER NOT NULL, "
-                + "costo_max INTEGER NOT NULL, "
-                + "estado TEXT NOT NULL DEFAULT 'PENDIENTE' "
-                + "  CHECK (estado IN ('PENDIENTE', 'ACEPTADA', 'FINALIZADA', 'CANCELADA')), "
-                + "taller_id INTEGER REFERENCES taller(usuario_id), "
-                + "creado_en INTEGER NOT NULL, "
-                + "aceptado_en INTEGER, "
-                + "finalizado_en INTEGER)");
-        db.execSQL("CREATE INDEX idx_solicitud_distrito_estado ON solicitud(distrito, estado)");
-        db.execSQL("CREATE INDEX idx_solicitud_taller ON solicitud(taller_id, estado)");
-        db.execSQL("CREATE INDEX idx_solicitud_cliente ON solicitud(cliente_id)");
+                + "telefono TEXT, "
+                + "email TEXT NOT NULL, "
+                + "nombre_taller TEXT, "
+                + "distrito TEXT, "
+                + "actualizado_en INTEGER NOT NULL)");
     }
 
     @Override
@@ -98,6 +59,17 @@ public class AutoqueDbHelper extends SQLiteOpenHelper {
             db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS idx_usuario_firebase_uid "
                     + "ON usuario(firebase_uid)");
             db.execSQL("DROP TABLE IF EXISTS codigo_recuperacion");
+        }
+        if (oldVersion < 3) {
+            crearPerfilLocal(db);
+        }
+    }
+
+    static boolean existeTabla(SQLiteDatabase db, String tabla) {
+        try (Cursor c = db.rawQuery(
+                "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?",
+                new String[]{tabla})) {
+            return c.moveToFirst();
         }
     }
 }

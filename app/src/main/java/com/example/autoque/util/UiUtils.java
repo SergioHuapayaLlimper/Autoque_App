@@ -46,6 +46,21 @@ public final class UiUtils {
         return new SimpleDateFormat("d MMM, h:mm a", ES_PE).format(new Date(millis));
     }
 
+    public static String estrellas(double promedio) {
+        int llenas = (int) Math.round(promedio);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 1; i <= 5; i++) sb.append(i <= llenas ? '★' : '☆');
+        return sb.toString();
+    }
+
+    public static String promedio(double valor) {
+        return String.format(Locale.US, "%.1f", valor);
+    }
+
+    public static String fecha(long millis) {
+        return new SimpleDateFormat("d MMM yyyy", ES_PE).format(new Date(millis));
+    }
+
     public static void pintarEstado(TextView badge, String estado) {
         Context c = badge.getContext();
         badge.setText(Solicitud.etiquetaEstado(estado));

@@ -33,14 +33,6 @@ public class TallerHomeActivity extends BaseActivity {
         binding = ActivityTallerHomeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        binding.toolbar.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.action_logout) {
-                cerrarSesion();
-                return true;
-            }
-            return false;
-        });
-
         binding.bottomNav.setOnItemSelectedListener(item -> {
             mostrar(item.getItemId());
             return true;
@@ -75,8 +67,14 @@ public class TallerHomeActivity extends BaseActivity {
     }
 
     private void mostrar(int itemId) {
-        Fragment fragment = itemId == R.id.nav_atenciones
-                ? new AtencionesFragment() : new SolicitudesEntrantesFragment();
+        Fragment fragment;
+        if (itemId == R.id.nav_atenciones) {
+            fragment = new AtencionesFragment();
+        } else if (itemId == R.id.nav_perfil) {
+            fragment = new PerfilTallerFragment();
+        } else {
+            fragment = new SolicitudesEntrantesFragment();
+        }
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.contenedorFragment, fragment)
                 .commit();
@@ -84,8 +82,13 @@ public class TallerHomeActivity extends BaseActivity {
     }
 
     private void actualizarTitulo(int itemId) {
-        binding.toolbar.setTitle(itemId == R.id.nav_atenciones
-                ? R.string.mis_atenciones : R.string.solicitudes_entrantes);
+        if (itemId == R.id.nav_atenciones) {
+            binding.toolbar.setTitle(R.string.mis_atenciones);
+        } else if (itemId == R.id.nav_perfil) {
+            binding.toolbar.setTitle(R.string.mi_cuenta);
+        } else {
+            binding.toolbar.setTitle(R.string.solicitudes_entrantes);
+        }
     }
 
     void irAAtenciones() {

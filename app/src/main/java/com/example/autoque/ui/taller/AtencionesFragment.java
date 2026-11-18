@@ -12,21 +12,29 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.autoque.R;
-import com.example.autoque.data.SolicitudDao;
+import com.example.autoque.data.Escucha;
+import com.example.autoque.data.Resultado;
+import com.example.autoque.data.SolicitudRepository;
 import com.example.autoque.databinding.FragmentAtencionesBinding;
 import com.example.autoque.model.Solicitud;
 import com.example.autoque.util.Intents;
 import com.example.autoque.util.SessionManager;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.firestore.ListenerRegistration;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AtencionesFragment extends Fragment implements AtencionesAdapter.Listener {
 
     private FragmentAtencionesBinding binding;
-    private SolicitudDao solicitudDao;
-    private long tallerId;
+    private SolicitudRepository solicitudes;
+    private ListenerRegistration escucha;
+    private String tallerUid;
     private AtencionesAdapter adapter;
+    private final List<Solicitud> enCurso = new ArrayList<>();
+    private final List<Solicitud> finalizadas = new ArrayList<>();
 
     @Nullable
     @Override
@@ -38,37 +46,49 @@ public class AtencionesFragment extends Fragment implements AtencionesAdapter.Li
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        solicitudDao = new SolicitudDao(requireContext());
-        tallerId = new SessionManager(requireContext()).getUsuarioId();
+        solicitudes = new SolicitudRepository();
+        tallerUid = new SessionManager(requireContext()).getUid();
 
         binding.recycler.setLayoutManager(new LinearLayoutManager(requireContext()));
         adapter = new AtencionesAdapter(this);
         binding.recycler.setAdapter(adapter);
-
         binding.toggle.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
-            if (isChecked) cargar();
+            if (isChecked) pintar();
+        });
+
+        escucha = solicitudes.escucharDelTaller(tallerUid, new Escucha<>() {
+            @Override
+            public void onCambio(List<Solicitud> lista) {
+                enCurso.clear();
+                finalizadas.clear();
+                for (Solicitud s : lista) {
+                    if (Solicitud.ACEPTADA.equals(s.getEstado())) enCurso.add(s);
+                    else if (Solicitud.FINALIZADA.equals(s.getEstado())) finalizadas.add(s);
+                }
+                finalizadas.sort((a, b) -> Long.compare(
+                        b.getFinalizadoEn() != null ? b.getFinalizadoEn() : 0,
+                        a.getFinalizadoEn() != null ? a.getFinalizadoEn() : 0));
+                pintar();
+            }
+
+            @Override
+            public void onError(int mensaje) {
+                if (binding != null) Snackbar.make(binding.getRoot(), mensaje, Snackbar.LENGTH_LONG).show();
+            }
         });
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        cargar();
-    }
-
-    @Override
     public void onDestroyView() {
-        super.onDestroyView();
+        if (escucha != null) escucha.remove();
         binding = null;
+        super.onDestroyView();
     }
 
-    private void cargar() {
+    private void pintar() {
         if (binding == null) return;
-        List<Solicitud> enCurso = solicitudDao.atencionesEnCurso(tallerId);
-        List<Solicitud> finalizadas = solicitudDao.atencionesFinalizadas(tallerId);
         binding.btnEnCurso.setText(getString(R.string.en_curso_n, enCurso.size()));
         binding.btnFinalizadas.setText(getString(R.string.finalizadas_n, finalizadas.size()));
-
         boolean verEnCurso = binding.toggle.getCheckedButtonId() == R.id.btnEnCurso;
         List<Solicitud> lista = verEnCurso ? enCurso : finalizadas;
         adapter.setItems(lista);
@@ -92,13 +112,23 @@ public class AtencionesFragment extends Fragment implements AtencionesAdapter.Li
                 .setTitle(R.string.finalizar_confirmar_titulo)
                 .setMessage(getString(R.string.finalizar_confirmar_msg, s.getNombreContacto()))
                 .setNegativeButton(R.string.cancelar, null)
-                .setPositiveButton(R.string.finalizar, (d, w) -> {
-                    if (solicitudDao.finalizar(s.getId(), tallerId)) {
-                        Toast.makeText(requireContext(), R.string.atencion_marcada_finalizada,
-                                Toast.LENGTH_SHORT).show();
-                    }
-                    cargar();
-                })
+                .setPositiveButton(R.string.finalizar, (d, w) ->
+                        solicitudes.finalizar(s.getId(), tallerUid, new Resultado<>() {
+                            @Override
+                            public void onExito(Boolean ok) {
+                                if (ok && isAdded()) {
+                                    Toast.makeText(requireContext(), R.string.atencion_marcada_finalizada,
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onError(int mensaje) {
+                                if (binding != null) {
+                                    Snackbar.make(binding.getRoot(), mensaje, Snackbar.LENGTH_LONG).show();
+                                }
+                            }
+                        }))
                 .show();
     }
 }

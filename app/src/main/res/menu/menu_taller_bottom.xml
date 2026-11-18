@@ -8,4 +8,8 @@
         android:id="@+id/nav_atenciones"
         android:icon="@drawable/ic_task_done"
         android:title="@string/nav_atenciones" />
+    <item
+        android:id="@+id/nav_perfil"
+        android:icon="@drawable/ic_person"
+        android:title="@string/nav_perfil" />
 </menu>

@@ -31,6 +31,33 @@
             android:padding="20dp">
 
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardMapa"
+                style="@style/Autoque.Card"
+                android:layout_width="match_parent"
+                android:layout_height="190dp"
+                android:layout_marginBottom="12dp"
+                android:visibility="gone">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <com.example.autoque.ui.common.MapaEnScroll
+                        android:id="@+id/mapa"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                    <TextView
+                        android:id="@+id/tvDistancia"
+                        style="@style/Autoque.Badge"
+                        android:layout_margin="12dp"
+                        android:background="@drawable/bg_badge_finalizada"
+                        android:textColor="@color/text_primary"
+                        android:visibility="gone" />
+                </FrameLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
                 style="@style/Autoque.Card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">

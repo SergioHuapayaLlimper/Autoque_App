@@ -9,6 +9,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.autoque.R;
 import com.example.autoque.databinding.ItemSolicitudEntranteBinding;
 import com.example.autoque.model.Solicitud;
+import com.example.autoque.model.Taller;
+import com.example.autoque.util.Geo;
 import com.example.autoque.util.UiUtils;
 
 import java.util.ArrayList;
@@ -28,6 +30,13 @@ class SolicitudesEntrantesAdapter
 
     SolicitudesEntrantesAdapter(Listener listener) {
         this.listener = listener;
+    }
+
+    private Taller taller;
+
+    void setTaller(Taller taller) {
+        this.taller = taller;
+        notifyDataSetChanged();
     }
 
     void setItems(List<Solicitud> nuevas) {
@@ -66,7 +75,11 @@ class SolicitudesEntrantesAdapter
             UiUtils.pintarEstado(binding.tvEstado, s.getEstado());
             binding.tvDireccion.setText(s.getDireccion() + " · " + s.getDistrito());
             String tiempo = UiUtils.haceCuanto(s.getCreadoEn());
-            binding.tvTiempo.setText(Character.toUpperCase(tiempo.charAt(0)) + tiempo.substring(1));
+            tiempo = Character.toUpperCase(tiempo.charAt(0)) + tiempo.substring(1);
+            Double km = taller == null ? null : Geo.distanciaKm(s.getLatitud(), s.getLongitud(),
+                    taller.getLatitud(), taller.getLongitud());
+            binding.tvTiempo.setText(km == null ? tiempo : itemView.getContext()
+                    .getString(R.string.tiempo_y_distancia, tiempo, Geo.formatearKm(km)));
             binding.tvCosto.setText(itemView.getContext()
                     .getString(R.string.aprox_costo, s.rangoCosto()));
             itemView.setOnClickListener(v -> listener.onVer(s));

@@ -4,23 +4,31 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.example.autoque.R;
-import com.example.autoque.data.SolicitudDao;
+import com.example.autoque.data.Escucha;
+import com.example.autoque.data.PerfilRepository;
+import com.example.autoque.data.SolicitudRepository;
 import com.example.autoque.databinding.ActivityDetalleSolicitudBinding;
 import com.example.autoque.model.Solicitud;
+import com.example.autoque.model.Taller;
 import com.example.autoque.model.Usuario;
 import com.example.autoque.ui.BaseActivity;
 import com.example.autoque.ui.common.DetalleFilas;
+import com.example.autoque.ui.common.MiniMapa;
+import com.example.autoque.util.Geo;
 import com.example.autoque.util.Intents;
 import com.example.autoque.util.UiUtils;
+import com.google.firebase.firestore.ListenerRegistration;
 
 public class DetalleSolicitudActivity extends BaseActivity implements AceptacionSolicitud.Callback {
 
     public static final String EXTRA_SOLICITUD_ID = "solicitud_id";
 
     private ActivityDetalleSolicitudBinding binding;
-    private SolicitudDao solicitudDao;
-    private long solicitudId;
+    private MiniMapa miniMapa;
+    private ListenerRegistration escuchaSolicitud;
+    private ListenerRegistration escuchaTaller;
     private Solicitud solicitud;
+    private Taller taller;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,38 +37,64 @@ public class DetalleSolicitudActivity extends BaseActivity implements Aceptacion
         binding = ActivityDetalleSolicitudBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         setupToolbarConBack(binding.toolbar);
-        solicitudDao = new SolicitudDao(this);
-        solicitudId = getIntent().getLongExtra(EXTRA_SOLICITUD_ID, -1);
+        miniMapa = new MiniMapa(binding.mapa);
+        String solicitudId = getIntent().getStringExtra(EXTRA_SOLICITUD_ID);
 
         binding.btnAceptar.setOnClickListener(v -> {
-            if (solicitud != null) {
-                AceptacionSolicitud.aceptar(this, solicitud, session.getUsuarioId(), this);
-            }
+            if (solicitud != null) AceptacionSolicitud.aceptar(this, solicitud, taller, this);
         });
         binding.btnMapa.setOnClickListener(v -> {
             if (solicitud != null) Intents.abrirMapa(this, solicitud);
+        });
+
+        escuchaTaller = new PerfilRepository().escucharTaller(session.getUid(), new Escucha<>() {
+            @Override
+            public void onCambio(Taller t) {
+                taller = t;
+                pintar();
+            }
+        });
+        escuchaSolicitud = new SolicitudRepository().escuchar(solicitudId, new Escucha<>() {
+            @Override
+            public void onCambio(Solicitud s) {
+                solicitud = s;
+                pintar();
+            }
         });
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (solicitudDao != null) cargar();
+        if (miniMapa != null) miniMapa.onResume();
     }
 
-    private void cargar() {
-        solicitud = solicitudDao.obtener(solicitudId);
-        long tallerId = session.getUsuarioId();
-        if (solicitud == null || (!Solicitud.PENDIENTE.equals(solicitud.getEstado())
-                && !solicitud.asignadaA(tallerId))) {
+    @Override
+    protected void onPause() {
+        if (miniMapa != null) miniMapa.onPause();
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (escuchaSolicitud != null) escuchaSolicitud.remove();
+        if (escuchaTaller != null) escuchaTaller.remove();
+        if (miniMapa != null) miniMapa.onDestroy();
+        super.onDestroy();
+    }
+
+    private void pintar() {
+        if (solicitud == null) return;
+        String uid = session.getUid();
+        boolean pendiente = Solicitud.PENDIENTE.equals(solicitud.getEstado());
+        if (!pendiente && !solicitud.asignadaA(uid)) {
             finish();
             return;
         }
-        boolean pendiente = Solicitud.PENDIENTE.equals(solicitud.getEstado());
 
         binding.tvIniciales.setText(UiUtils.iniciales(solicitud.getNombreContacto()));
         binding.tvCliente.setText(solicitud.getNombreContacto());
-        binding.tvNumero.setText(getString(R.string.solicitud_numero_hora, solicitud.getId(),
+        binding.tvNumero.setText(getString(R.string.solicitud_numero_hora, solicitud.getNumero(),
                 UiUtils.haceCuanto(solicitud.getCreadoEn())));
         UiUtils.pintarEstado(binding.tvEstado, solicitud.getEstado());
 
@@ -74,16 +108,22 @@ public class DetalleSolicitudActivity extends BaseActivity implements Aceptacion
                 .separador()
                 .fila(R.string.costo_aproximado, solicitud.rangoCosto(), true);
 
-        binding.btnMapa.setVisibility(solicitud.tieneUbicacion() ? View.VISIBLE : View.GONE);
-        binding.panelAceptar.setVisibility(pendiente ? View.VISIBLE : View.GONE);
-    }
-
-    @Override
-    public void onListaCambio() {
-        solicitud = solicitudDao.obtener(solicitudId);
-        if (solicitud != null && solicitud.asignadaA(session.getUsuarioId())) {
-            cargar();
+        binding.cardMapa.setVisibility(solicitud.tieneUbicacion() ? View.VISIBLE : View.GONE);
+        if (solicitud.tieneUbicacion()) {
+            miniMapa.limpiar();
+            miniMapa.marcar(solicitud.getLatitud(), solicitud.getLongitud(),
+                    getString(R.string.cliente_label), true);
+            if (taller != null && taller.tieneUbicacion()) {
+                miniMapa.marcar(taller.getLatitud(), taller.getLongitud(), taller.getNombreTaller(), false);
+            }
         }
+        Double km = taller == null ? null : Geo.distanciaKm(solicitud.getLatitud(), solicitud.getLongitud(),
+                taller.getLatitud(), taller.getLongitud());
+        binding.tvDistancia.setVisibility(km != null ? View.VISIBLE : View.GONE);
+        if (km != null) binding.tvDistancia.setText(getString(R.string.a_distancia_taller, Geo.formatearKm(km)));
+
+        binding.btnMapa.setVisibility(View.VISIBLE);
+        binding.panelAceptar.setVisibility(pendiente ? View.VISIBLE : View.GONE);
     }
 
     @Override

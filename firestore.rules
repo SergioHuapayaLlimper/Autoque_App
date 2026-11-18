@@ -1,0 +1,85 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function autenticado() {
+      return request.auth != null;
+    }
+
+    function soy(uid) {
+      return autenticado() && request.auth.uid == uid;
+    }
+
+    function soloCambia(campos) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(campos);
+    }
+
+    match /usuarios/{uid} {
+      allow read: if autenticado();
+      allow create: if soy(uid) && request.resource.data.rol in ['CLIENTE', 'TALLER'];
+      allow update: if soy(uid) && soloCambia(['nombre', 'telefono']);
+    }
+
+    match /talleres/{uid} {
+      allow read: if autenticado();
+      allow create: if soy(uid);
+      allow update: if (soy(uid)
+            && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['sumaEstrellas', 'totalResenas']))
+        || (autenticado()
+            && soloCambia(['sumaEstrellas', 'totalResenas'])
+            && request.resource.data.totalResenas == resource.data.totalResenas + 1);
+
+      match /fotos/{fotoId} {
+        allow read: if autenticado();
+        allow create: if soy(uid) && request.resource.data.imagenBase64.size() < 900000;
+        allow delete: if soy(uid);
+      }
+    }
+
+    match /contadores/{id} {
+      allow read, write: if autenticado();
+    }
+
+    match /solicitudes/{id} {
+      allow read: if autenticado();
+      allow create: if autenticado()
+        && request.resource.data.clienteUid == request.auth.uid
+        && request.resource.data.estado == 'PENDIENTE';
+      allow update: if autenticado() && (
+        (resource.data.clienteUid == request.auth.uid
+            && resource.data.estado == 'PENDIENTE'
+            && request.resource.data.estado == 'CANCELADA'
+            && soloCambia(['estado']))
+        || (resource.data.estado == 'PENDIENTE'
+            && request.resource.data.estado == 'ACEPTADA'
+            && request.resource.data.tallerUid == request.auth.uid
+            && get(/databases/$(database)/documents/talleres/$(request.auth.uid)).data.distrito == resource.data.distrito
+            && soloCambia(['estado', 'tallerUid', 'nombreTaller', 'telefonoTaller', 'aceptadoEn']))
+        || (resource.data.tallerUid == request.auth.uid
+            && resource.data.estado == 'ACEPTADA'
+            && request.resource.data.estado == 'FINALIZADA'
+            && soloCambia(['estado', 'finalizadoEn']))
+        || (resource.data.clienteUid == request.auth.uid
+            && resource.data.estado == 'FINALIZADA'
+            && request.resource.data.calificada == true
+            && soloCambia(['calificada']))
+      );
+    }
+
+    match /resenas_taller/{solicitudId} {
+      allow read: if autenticado();
+      allow create: if autenticado()
+        && request.resource.data.autorUid == request.auth.uid
+        && get(/databases/$(database)/documents/solicitudes/$(solicitudId)).data.clienteUid == request.auth.uid
+        && request.resource.data.estrellas >= 1
+        && request.resource.data.estrellas <= 5;
+    }
+
+    match /resenas_app/{uid} {
+      allow read: if autenticado();
+      allow write: if soy(uid)
+        && request.resource.data.estrellas >= 1
+        && request.resource.data.estrellas <= 5;
+    }
+  }
+}

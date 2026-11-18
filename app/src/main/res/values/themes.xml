@@ -146,6 +146,14 @@
         <item name="android:insetBottom">0dp</item>
     </style>
 
+    <style name="Widget.Autoque.RatingBar" parent="Widget.AppCompat.RatingBar">
+        <item name="android:progressTint">@color/autoque_yellow</item>
+        <item name="android:secondaryProgressTint">@color/autoque_yellow</item>
+        <item name="android:progressBackgroundTint">@color/outline</item>
+        <item name="android:numStars">5</item>
+        <item name="android:stepSize">1</item>
+    </style>
+
     <style name="Autoque.BottomNav.Indicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
         <item name="android:color">@color/autoque_yellow</item>
     </style>

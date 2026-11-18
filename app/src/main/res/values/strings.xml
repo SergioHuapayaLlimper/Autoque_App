@@ -207,4 +207,153 @@
     <string name="sin_en_curso">No tienes atenciones en curso. Acepta una solicitud desde la pestaña Solicitudes.</string>
     <string name="sin_finalizadas">Aún no tienes atenciones finalizadas.</string>
     <string name="no_hay_app_mapas">No hay una app de mapas instalada</string>
+
+    <string name="nav_inicio">Inicio</string>
+    <string name="nav_perfil">Perfil</string>
+    <string name="sin_permiso_datos">No tienes permiso para esta acción. Revisa las reglas de Firestore.</string>
+    <string name="firestore_no_creado">La base de datos de Firestore aún no está creada en la consola de Firebase.</string>
+    <string name="sin_perfil">No encontramos el perfil de esta cuenta. Regístrate de nuevo con este correo.</string>
+    <string name="sesion_expirada">Tu sesión expiró. Vuelve a iniciar sesión.</string>
+    <string name="password_actual_incorrecta">La contraseña actual no es correcta</string>
+
+    <string name="canal_solicitudes">Estado de tus solicitudes</string>
+    <string name="canal_solicitudes_desc">Avisos cuando un taller acepta tu solicitud</string>
+    <string name="notif_aceptada_titulo">¡Tu solicitud fue aceptada!</string>
+    <string name="notif_aceptada_texto">%1$s aceptó tu solicitud. El mecánico va en camino.</string>
+
+    <string name="gps_activo">GPS activo</string>
+    <string name="gps_apagado_chip">GPS desactivado</string>
+    <string name="tu_ubicacion_actual">Tu ubicación actual</string>
+    <string name="ubicacion_no_disponible">Ubicación no disponible</string>
+    <string name="tu_estas_aqui">Tú estás aquí</string>
+    <string name="cliente_label">Cliente</string>
+    <string name="sin_permiso_titulo">Activa tu ubicación</string>
+    <string name="sin_permiso_desc">Permite el acceso para ver tu posición en el mapa y pedir auxilio.</string>
+    <string name="gps_apagado_titulo">GPS desactivado</string>
+    <string name="gps_apagado_desc">Activa la ubicación del dispositivo para ver tu posición en el mapa y poder solicitar auxilio.</string>
+    <string name="permitir_ubicacion">Permitir ubicación</string>
+    <string name="activar_gps">Activar ubicación</string>
+    <string name="actualizar_ubicacion">Actualizar ubicación</string>
+    <string name="resenas_app">Reseñas de la app</string>
+    <string name="ver_todas">Ver todas</string>
+    <string name="calificar_la_app">Calificar la app</string>
+    <string name="sin_resenas_app">Aún no hay reseñas. ¡Sé el primero en calificar!</string>
+    <plurals name="n_resenas">
+        <item quantity="one">%d reseña</item>
+        <item quantity="other">%d reseñas</item>
+    </plurals>
+
+    <string name="mis_solicitudes">Mis solicitudes</string>
+    <string name="filtro_todas">Todas</string>
+    <string name="estado_cancelada">Cancelada</string>
+    <string name="calificar_taller">Calificar taller</string>
+    <string name="ya_calificada">Ya calificaste esta atención</string>
+    <string name="sin_mis_solicitudes">Aún no tienes solicitudes. Cuando pidas asistencia aparecerán aquí.</string>
+    <string name="sin_solicitudes_filtro">No hay solicitudes con este estado.</string>
+    <string name="numero_fecha">#%1$d · %2$s</string>
+    <string name="esperando_taller">Esperando que un taller acepte</string>
+
+    <string name="mi_perfil">Mi perfil</string>
+    <string name="editar_mis_datos">Editar mis datos</string>
+    <string name="cambiar_contrasena">Cambiar contraseña</string>
+    <string name="ayuda_soporte">Ayuda y soporte</string>
+    <string name="mi_cuenta">Mi cuenta</string>
+    <string name="datos_del_taller_op">Datos del taller</string>
+    <string name="servicios_op">Servicios ofrecidos</string>
+    <string name="distrito_atencion">Distrito de atención</string>
+    <string name="galeria_fotos">Galería de fotos</string>
+    <string name="opiniones_recibidas">Opiniones recibidas</string>
+    <string name="encargado_x">Encargado: %1$s</string>
+    <plurals name="n_servicios">
+        <item quantity="one">%d servicio</item>
+        <item quantity="other">%d servicios</item>
+    </plurals>
+
+    <string name="guardar_cambios">Guardar cambios</string>
+    <string name="datos_guardados">Datos actualizados</string>
+    <string name="correo_no_editable">El correo no se puede cambiar</string>
+    <string name="contrasena_actual">Contraseña actual</string>
+    <string name="nueva_contrasena">Nueva contraseña</string>
+    <string name="confirmar_contrasena">Confirmar contraseña</string>
+    <string name="contrasenas_no_coinciden">Las contraseñas no coinciden</string>
+    <string name="contrasena_actualizada">Contraseña actualizada</string>
+
+    <string name="ayuda_p1">¿Cómo pido asistencia?</string>
+    <string name="ayuda_r1">En Inicio toca \"Solicitar asistencia\", confirma tu ubicación, elige el tipo de incidente y envía la solicitud. Los talleres de tu distrito la verán al instante.</string>
+    <string name="ayuda_p2">¿Cuánto me costará?</string>
+    <string name="ayuda_r2">Al elegir el incidente verás un costo aproximado. Es referencial: el monto final lo confirma el taller.</string>
+    <string name="ayuda_p3">¿Puedo cancelar mi solicitud?</string>
+    <string name="ayuda_r3">Sí, mientras esté en estado Pendiente. Cuando un taller la acepta ya no se puede cancelar desde la app; llama al taller.</string>
+    <string name="ayuda_p4">Soy taller, ¿qué solicitudes veo?</string>
+    <string name="ayuda_r4">Solo las solicitudes Pendientes de tu distrito de atención. La primera que aceptes es tuya; las demás desaparecen para los otros talleres.</string>
+    <string name="ayuda_p5">Olvidé mi contraseña</string>
+    <string name="ayuda_r5">En Iniciar sesión toca \"¿Olvidaste tu contraseña?\" y te enviaremos un enlace a tu correo.</string>
+
+    <string name="seguimiento">Seguimiento</string>
+    <string name="va_en_camino">El mecánico va en camino</string>
+    <string name="llegada_estimada">Llegada estimada: %1$d – %2$d min</string>
+    <string name="taller_en_camino_km">Taller en camino · %1$s</string>
+    <string name="ver_perfil">Ver perfil</string>
+    <string name="calificar_servicio">Calificar servicio</string>
+    <string name="sin_calificaciones">Sin calificaciones aún</string>
+    <string name="calif_opiniones">%1$s · %2$s</string>
+
+    <string name="perfil_del_taller">Perfil del taller</string>
+    <string name="resenas_titulo">Reseñas</string>
+    <string name="sin_fotos">Este taller aún no tiene fotos</string>
+    <string name="sin_resenas_taller">Aún no tiene reseñas</string>
+    <string name="servicios_titulo">Servicios</string>
+    <string name="encargado_label">Encargado</string>
+    <plurals name="n_opiniones">
+        <item quantity="one">%d opinión</item>
+        <item quantity="other">%d opiniones</item>
+    </plurals>
+
+    <string name="como_fue_atencion">¿Cómo fue la atención del taller?</string>
+    <string name="comentario">Comentario</string>
+    <string name="hint_comentario_taller">Cuéntanos tu experiencia con el taller…</string>
+    <string name="enviar_calificacion">Enviar calificación</string>
+    <string name="elige_estrellas">Elige de 1 a 5 estrellas</string>
+    <string name="calificacion_enviada">¡Gracias por tu calificación!</string>
+    <string name="estrellas_1">Mala</string>
+    <string name="estrellas_2">Regular</string>
+    <string name="estrellas_3">Buena</string>
+    <string name="estrellas_4">Muy buena</string>
+    <string name="estrellas_5">Excelente</string>
+    <string name="finalizada_resumen">Finalizada · %1$s · %2$s</string>
+
+    <string name="calificar_app_titulo">Calificar Autoque</string>
+    <plurals name="promedio_de">
+        <item quantity="one">Promedio de %d reseña</item>
+        <item quantity="other">Promedio de %d reseñas</item>
+    </plurals>
+    <string name="tu_opinion">Tu opinión sobre la app</string>
+    <string name="hint_comentario_app">¿Qué te pareció Autoque?</string>
+    <string name="publicar_resena">Publicar reseña</string>
+    <string name="actualizar_resena">Actualizar mi reseña</string>
+    <string name="resenas_recientes">Reseñas recientes</string>
+    <string name="resena_publicada">¡Gracias! Tu reseña fue publicada</string>
+
+    <string name="mi_taller">Mi taller</string>
+    <string name="tab_galeria">Galería</string>
+    <string name="tab_opiniones">Opiniones</string>
+    <string name="tab_datos">Datos</string>
+    <string name="fotos_del_local">Fotos del local (%1$d/%2$d)</string>
+    <string name="subir_foto">Subir foto</string>
+    <string name="formatos_foto">Formatos: JPG o PNG · se comprimen automáticamente</string>
+    <string name="titulo_foto">Título de la foto</string>
+    <string name="hint_titulo_foto">Ej. Fachada, Área de trabajo, Grúa</string>
+    <string name="foto_subida">Foto agregada a tu galería</string>
+    <string name="limite_fotos">Llegaste al máximo de 10 fotos</string>
+    <string name="eliminar_foto_titulo">¿Eliminar esta foto?</string>
+    <string name="eliminar">Eliminar</string>
+    <string name="error_foto">No se pudo procesar la imagen</string>
+    <string name="mas_recientes">Más recientes primero</string>
+    <string name="editar_datos_taller">Editar datos del taller</string>
+    <string name="sin_opiniones">Aún no recibes opiniones. Aparecerán cuando tus clientes califiquen tus atenciones.</string>
+    <string name="sin_fotos_propias">Aún no subes fotos. Las fotos dan confianza a los clientes.</string>
+
+    <string name="a_distancia">a %1$s</string>
+    <string name="a_distancia_taller">a %1$s de tu taller</string>
+    <string name="tiempo_y_distancia">%1$s · a %2$s</string>
 </resources>

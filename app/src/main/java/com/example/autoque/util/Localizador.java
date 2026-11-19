@@ -7,7 +7,9 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
+import android.location.LocationRequest;
 import android.os.CancellationSignal;
 import android.os.Handler;
 import android.os.Looper;
@@ -32,11 +34,18 @@ public final class Localizador {
         void onDireccion(String direccion, String distrito);
     }
 
+    /** Seguimiento continuo de la ubicacion; llamar a detener() al salir de la pantalla. */
+    public interface Seguimiento {
+        void detener();
+    }
+
     public static final String[] PERMISOS = {
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION};
 
     private static final long ESPERA_MAXIMA_MS = 10000;
+    private static final long INTERVALO_SEGUIMIENTO_MS = 5000;
+    private static final float DISTANCIA_MINIMA_M = 10f;
 
     private Localizador() {}
 
@@ -61,15 +70,7 @@ public final class Localizador {
             return cancelar;
         }
         LocationManager lm = context.getSystemService(LocationManager.class);
-        String proveedor;
-        if (lm.hasProvider(LocationManager.FUSED_PROVIDER)
-                && lm.isProviderEnabled(LocationManager.FUSED_PROVIDER)) {
-            proveedor = LocationManager.FUSED_PROVIDER;
-        } else if (lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            proveedor = LocationManager.GPS_PROVIDER;
-        } else {
-            proveedor = LocationManager.NETWORK_PROVIDER;
-        }
+        String proveedor = proveedor(lm);
         boolean[] entregado = {false};
         Handler handler = new Handler(Looper.getMainLooper());
         Runnable porTiempo = () -> {
@@ -86,6 +87,34 @@ public final class Localizador {
             cb.onUbicacion(location != null ? location : ultimaConocida(lm));
         });
         return cancelar;
+    }
+
+    /**
+     * Escucha la ubicacion de forma continua (cada 5 s o al moverse 10 m) hasta llamar a
+     * detener(). Devuelve null si no hay permiso o el GPS esta apagado.
+     */
+    @SuppressLint("MissingPermission")
+    public static Seguimiento seguir(Context context, UbicacionCallback cb) {
+        if (estado(context) != Estado.LISTO) return null;
+        LocationManager lm = context.getSystemService(LocationManager.class);
+        LocationRequest solicitud = new LocationRequest.Builder(INTERVALO_SEGUIMIENTO_MS)
+                .setMinUpdateDistanceMeters(DISTANCIA_MINIMA_M)
+                .setQuality(LocationRequest.QUALITY_HIGH_ACCURACY)
+                .build();
+        LocationListener escucha = cb::onUbicacion;
+        lm.requestLocationUpdates(proveedor(lm), solicitud,
+                ContextCompat.getMainExecutor(context), escucha);
+        return () -> lm.removeUpdates(escucha);
+    }
+
+    private static String proveedor(LocationManager lm) {
+        if (lm.hasProvider(LocationManager.FUSED_PROVIDER)
+                && lm.isProviderEnabled(LocationManager.FUSED_PROVIDER)) {
+            return LocationManager.FUSED_PROVIDER;
+        } else if (lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            return LocationManager.GPS_PROVIDER;
+        }
+        return LocationManager.NETWORK_PROVIDER;
     }
 
     @SuppressLint("MissingPermission")

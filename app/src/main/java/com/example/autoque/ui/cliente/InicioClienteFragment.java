@@ -23,6 +23,7 @@ import com.example.autoque.databinding.FragmentInicioClienteBinding;
 import com.example.autoque.model.Resena;
 import com.example.autoque.model.Solicitud;
 import com.example.autoque.ui.common.MiniMapa;
+import com.example.autoque.util.Geo;
 import com.example.autoque.util.Localizador;
 import com.example.autoque.util.SessionManager;
 import com.example.autoque.util.UiUtils;
@@ -39,7 +40,13 @@ public class InicioClienteFragment extends Fragment {
     private SessionManager session;
     private ListenerRegistration escuchaSolicitudes;
     private ListenerRegistration escuchaResenas;
+    private static final double DISTANCIA_REGEOCODIFICAR_KM = 0.05;
+
     private CancellationSignal cancelarUbicacion;
+    private Localizador.Seguimiento seguimiento;
+    private boolean pinMostrado;
+    private Double latitudGeocodificada;
+    private Double longitudGeocodificada;
     private Solicitud solicitudActiva;
     private Localizador.Estado ultimoEstado;
     private Double latitud;
@@ -62,6 +69,9 @@ public class InicioClienteFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         session = new SessionManager(requireContext());
         miniMapa = new MiniMapa(binding.mapa);
+        pinMostrado = false;
+        latitudGeocodificada = null;
+        longitudGeocodificada = null;
         String nombre = session.getNombre();
         int espacio = nombre.indexOf(' ');
         binding.tvSaludo.setText(getString(R.string.hola_nombre,
@@ -103,11 +113,14 @@ public class InicioClienteFragment extends Fragment {
         miniMapa.onResume();
         if (Localizador.estado(requireContext()) != ultimoEstado || latitud == null) {
             actualizarUbicacion();
+        } else {
+            iniciarSeguimiento();
         }
     }
 
     @Override
     public void onPause() {
+        detenerSeguimiento();
         miniMapa.onPause();
         super.onPause();
     }
@@ -117,6 +130,7 @@ public class InicioClienteFragment extends Fragment {
         if (escuchaSolicitudes != null) escuchaSolicitudes.remove();
         if (escuchaResenas != null) escuchaResenas.remove();
         if (cancelarUbicacion != null) cancelarUbicacion.cancel();
+        detenerSeguimiento();
         miniMapa.onDestroy();
         binding = null;
         super.onDestroyView();
@@ -125,6 +139,7 @@ public class InicioClienteFragment extends Fragment {
     private void actualizarUbicacion() {
         if (binding == null) return;
         ultimoEstado = Localizador.estado(requireContext());
+        if (ultimoEstado != Localizador.Estado.LISTO) detenerSeguimiento();
         if (ultimoEstado == Localizador.Estado.SIN_PERMISO) {
             mostrarPanel(R.string.sin_permiso_titulo, R.string.sin_permiso_desc, R.string.permitir_ubicacion);
             binding.tvGpsChip.setText(R.string.ubicacion_no_disponible);
@@ -141,6 +156,20 @@ public class InicioClienteFragment extends Fragment {
         binding.tvGpsChip.setText(R.string.gps_buscando);
         if (cancelarUbicacion != null) cancelarUbicacion.cancel();
         cancelarUbicacion = Localizador.obtener(requireContext(), this::onUbicacion);
+        iniciarSeguimiento();
+    }
+
+    /** RF08: sigue la ubicacion del cliente mientras el inicio esta visible. */
+    private void iniciarSeguimiento() {
+        if (seguimiento != null || binding == null) return;
+        seguimiento = Localizador.seguir(requireContext(), this::onUbicacion);
+    }
+
+    private void detenerSeguimiento() {
+        if (seguimiento != null) {
+            seguimiento.detener();
+            seguimiento = null;
+        }
     }
 
     private void mostrarPanel(int titulo, int descripcion, int boton) {
@@ -160,9 +189,21 @@ public class InicioClienteFragment extends Fragment {
         longitud = location.getLongitude();
         int precision = Math.round(location.getAccuracy());
         binding.tvGpsChip.setText(getString(R.string.gps_activo) + " · ±" + precision + " m");
-        miniMapa.limpiar();
-        miniMapa.marcar(latitud, longitud, getString(R.string.tu_estas_aqui), true);
-        binding.tvDireccionActual.setText(String.format(Locale.US, "%.5f, %.5f", latitud, longitud));
+        if (!pinMostrado) {
+            miniMapa.limpiar();
+            miniMapa.marcar(latitud, longitud, getString(R.string.tu_estas_aqui), true);
+            pinMostrado = true;
+        } else {
+            miniMapa.moverPrincipal(latitud, longitud, getString(R.string.tu_estas_aqui));
+        }
+        // La direccion solo se vuelve a buscar si el cliente se movio mas de 50 m
+        Double movido = Geo.distanciaKm(latitudGeocodificada, longitudGeocodificada, latitud, longitud);
+        if (movido != null && movido < DISTANCIA_REGEOCODIFICAR_KM) return;
+        latitudGeocodificada = latitud;
+        longitudGeocodificada = longitud;
+        if (direccion == null) {
+            binding.tvDireccionActual.setText(String.format(Locale.US, "%.5f, %.5f", latitud, longitud));
+        }
         Localizador.direccion(requireContext(), latitud, longitud, (dir, dist) -> {
             if (binding == null) return;
             direccion = dir;

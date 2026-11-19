@@ -15,6 +15,7 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
@@ -36,6 +37,8 @@ public class MiniMapa {
     private final List<LatLng> puntos = new ArrayList<>();
     private final List<Runnable> pendientes = new ArrayList<>();
     private GoogleMap googleMap;
+    private Marker principal;
+    private int indicePrincipal = -1;
     private boolean destruido;
 
     public MiniMapa(MapView mapa) {
@@ -64,19 +67,48 @@ public class MiniMapa {
         cuandoEsteListo(() -> {
             googleMap.clear();
             puntos.clear();
+            principal = null;
+            indicePrincipal = -1;
         });
     }
 
     public void marcar(double lat, double lon, String titulo, boolean principal) {
         cuandoEsteListo(() -> {
             LatLng punto = new LatLng(lat, lon);
-            googleMap.addMarker(new MarkerOptions()
+            Marker marcador = googleMap.addMarker(new MarkerOptions()
                     .position(punto)
                     .title(titulo)
                     .anchor(0.5f, 1f)
                     .icon(icono(principal)));
             puntos.add(punto);
+            if (principal) {
+                this.principal = marcador;
+                indicePrincipal = puntos.size() - 1;
+            }
             encuadrar();
+        });
+    }
+
+    /**
+     * Mueve el pin principal a una nueva posicion sin redibujar el mapa (seguimiento en
+     * tiempo real). Si todavia no existe, lo crea.
+     */
+    public void moverPrincipal(double lat, double lon, String titulo) {
+        cuandoEsteListo(() -> {
+            if (principal == null) {
+                marcar(lat, lon, titulo, true);
+                return;
+            }
+            LatLng punto = new LatLng(lat, lon);
+            principal.setPosition(punto);
+            if (indicePrincipal >= 0 && indicePrincipal < puntos.size()) {
+                puntos.set(indicePrincipal, punto);
+            }
+            if (puntos.size() == 1) {
+                googleMap.animateCamera(CameraUpdateFactory.newLatLng(punto));
+            } else {
+                encuadrar();
+            }
         });
     }
 

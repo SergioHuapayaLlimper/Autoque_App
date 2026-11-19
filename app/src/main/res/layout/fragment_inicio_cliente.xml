@@ -26,7 +26,7 @@
         <com.google.android.material.card.MaterialCardView
             style="@style/Autoque.Card"
             android:layout_width="match_parent"
-            android:layout_height="220dp"
+            android:layout_height="240dp"
             android:layout_marginTop="16dp">
 
             <FrameLayout
@@ -52,15 +52,16 @@
                     android:background="@color/surface_muted"
                     android:gravity="center"
                     android:orientation="vertical"
-                    android:padding="20dp"
+                    android:paddingHorizontal="20dp"
+                    android:paddingVertical="14dp"
                     android:visibility="gone">
 
                     <ImageView
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:background="@drawable/bg_circle_black"
                         android:importantForAccessibility="no"
-                        android:padding="12dp"
+                        android:padding="10dp"
                         android:src="@drawable/ic_location"
                         app:tint="@color/autoque_yellow" />
 
@@ -68,7 +69,7 @@
                         android:id="@+id/tvSinUbicacionTitulo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="8dp"
                         android:textAppearance="@style/TextAppearance.Autoque.CardTitle" />
 
                     <TextView
@@ -76,7 +77,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
+                        android:ellipsize="end"
                         android:gravity="center"
+                        android:maxLines="3"
                         android:textAppearance="@style/TextAppearance.Autoque.Label" />
 
                     <com.google.android.material.button.MaterialButton
@@ -84,7 +87,7 @@
                         style="@style/Widget.Autoque.Button.Small"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp" />
+                        android:layout_marginTop="10dp" />
                 </LinearLayout>
             </FrameLayout>
         </com.google.android.material.card.MaterialCardView>

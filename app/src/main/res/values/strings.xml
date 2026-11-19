@@ -220,6 +220,10 @@
     <string name="canal_solicitudes_desc">Avisos cuando un taller acepta tu solicitud</string>
     <string name="notif_aceptada_titulo">¡Tu solicitud fue aceptada!</string>
     <string name="notif_aceptada_texto">%1$s aceptó tu solicitud. El mecánico va en camino.</string>
+    <string name="canal_talleres">Solicitudes de tu distrito</string>
+    <string name="canal_talleres_desc">Avisos cuando un conductor de tu distrito pide asistencia</string>
+    <string name="notif_nueva_titulo">Nueva solicitud en %1$s</string>
+    <string name="notif_nueva_texto">%1$s · %2$s. Toca para ver el detalle y aceptarla.</string>
 
     <string name="gps_activo">GPS activo</string>
     <string name="gps_apagado_chip">GPS desactivado</string>
@@ -232,6 +236,8 @@
     <string name="gps_apagado_titulo">GPS desactivado</string>
     <string name="gps_apagado_desc">Activa la ubicación del dispositivo para ver tu posición en el mapa y poder solicitar auxilio.</string>
     <string name="permitir_ubicacion">Permitir ubicación</string>
+    <string name="sin_permiso_bloqueado_desc">Bloqueaste el permiso. Actívalo en Ajustes para ver tu posición en el mapa.</string>
+    <string name="abrir_ajustes">Abrir ajustes</string>
     <string name="activar_gps">Activar ubicación</string>
     <string name="actualizar_ubicacion">Actualizar ubicación</string>
     <string name="resenas_app">Reseñas de la app</string>

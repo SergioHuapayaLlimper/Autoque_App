@@ -2,6 +2,7 @@ package com.example.autoque.util;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -44,6 +45,8 @@ public final class Localizador {
             Manifest.permission.ACCESS_COARSE_LOCATION};
 
     private static final long ESPERA_MAXIMA_MS = 10000;
+    private static final String PREFS_PERMISOS = "autoque_permisos";
+    private static final String KEY_UBICACION_PEDIDA = "ubicacion_pedida";
     private static final long INTERVALO_SEGUIMIENTO_MS = 5000;
     private static final float DISTANCIA_MINIMA_M = 10f;
 
@@ -54,6 +57,24 @@ public final class Localizador {
                 == PackageManager.PERMISSION_GRANTED
                 || ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED;
+    }
+
+    /** Guarda que ya se mostro el dialogo de permiso de ubicacion al menos una vez. */
+    public static void marcarPermisoPedido(Context context) {
+        context.getSharedPreferences(PREFS_PERMISOS, Context.MODE_PRIVATE).edit()
+                .putBoolean(KEY_UBICACION_PEDIDA, true).apply();
+    }
+
+    /**
+     * true si el usuario rechazo el permiso de forma permanente: Android ya no muestra el
+     * dialogo y solo se puede activar desde los Ajustes de la app.
+     */
+    public static boolean permisoBloqueado(Activity activity) {
+        if (tienePermiso(activity)) return false;
+        boolean yaPedido = activity.getSharedPreferences(PREFS_PERMISOS, Context.MODE_PRIVATE)
+                .getBoolean(KEY_UBICACION_PEDIDA, false);
+        return yaPedido && !activity.shouldShowRequestPermissionRationale(
+                Manifest.permission.ACCESS_FINE_LOCATION);
     }
 
     public static Estado estado(Context context) {

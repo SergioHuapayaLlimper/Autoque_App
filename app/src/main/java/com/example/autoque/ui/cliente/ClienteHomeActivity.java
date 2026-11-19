@@ -14,6 +14,7 @@ import com.example.autoque.R;
 import com.example.autoque.databinding.ActivityClienteHomeBinding;
 import com.example.autoque.model.Usuario;
 import com.example.autoque.ui.BaseActivity;
+import com.example.autoque.util.Localizador;
 import com.example.autoque.util.Notificaciones;
 import com.example.autoque.util.SeguimientoSolicitudes;
 
@@ -26,6 +27,11 @@ public class ClienteHomeActivity extends BaseActivity {
 
     private final ActivityResultLauncher<String> permisoNotificaciones = registerForActivityResult(
             new ActivityResultContracts.RequestPermission(), concedido -> { });
+    private final ActivityResultLauncher<String[]> permisoUbicacion = registerForActivityResult(
+            new ActivityResultContracts.RequestMultiplePermissions(), r -> {
+                Localizador.marcarPermisoPedido(this);
+                pedirNotificaciones();
+            });
 
     public static void abrirSolicitudes(Context context) {
         Intent intent = new Intent(context, ClienteHomeActivity.class);
@@ -42,8 +48,13 @@ public class ClienteHomeActivity extends BaseActivity {
         setContentView(binding.getRoot());
 
         Notificaciones.crearCanal(this);
-        if (!Notificaciones.tienePermiso(this)) {
-            permisoNotificaciones.launch(Manifest.permission.POST_NOTIFICATIONS);
+        // RF09: al abrir el menu principal se pide la ubicacion y, despues, las notificaciones
+        // (en orden, porque Android solo muestra un dialogo de permiso a la vez)
+        if (savedInstanceState == null && !Localizador.tienePermiso(this)
+                && !Localizador.permisoBloqueado(this)) {
+            permisoUbicacion.launch(Localizador.PERMISOS);
+        } else if (savedInstanceState == null) {
+            pedirNotificaciones();
         }
         SeguimientoSolicitudes.iniciar(this, session.getUid());
 
@@ -57,6 +68,12 @@ public class ClienteHomeActivity extends BaseActivity {
             seleccionarTab(tabInicial(getIntent()));
         } else {
             actualizarTitulo(binding.bottomNav.getSelectedItemId());
+        }
+    }
+
+    private void pedirNotificaciones() {
+        if (!Notificaciones.tienePermiso(this)) {
+            permisoNotificaciones.launch(Manifest.permission.POST_NOTIFICATIONS);
         }
     }
 

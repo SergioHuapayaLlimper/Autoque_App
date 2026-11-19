@@ -174,6 +174,7 @@ public class SolicitarAsistenciaActivity extends BaseActivity {
         if (Localizador.tienePermiso(this)) {
             obtenerUbicacion();
         } else {
+            Localizador.marcarPermisoPedido(this);
             permisoUbicacion.launch(Localizador.PERMISOS);
         }
     }

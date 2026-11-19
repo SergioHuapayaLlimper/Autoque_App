@@ -15,6 +15,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.autoque.R;
 import com.example.autoque.data.AuthRepository;
+import com.example.autoque.util.AvisoSolicitudesTaller;
 import com.example.autoque.util.SeguimientoSolicitudes;
 import com.example.autoque.util.SessionManager;
 import com.google.android.material.appbar.MaterialToolbar;
@@ -59,6 +60,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     public void cerrarSesion() {
         session.cerrar();
         SeguimientoSolicitudes.detener();
+        AvisoSolicitudesTaller.detener();
         new AuthRepository(this).cerrarSesion();
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

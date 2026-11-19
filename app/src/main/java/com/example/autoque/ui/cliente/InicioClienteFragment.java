@@ -1,6 +1,7 @@
 package com.example.autoque.ui.cliente;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.CancellationSignal;
@@ -55,7 +56,10 @@ public class InicioClienteFragment extends Fragment {
     private String distrito;
 
     private final ActivityResultLauncher<String[]> permisoUbicacion = registerForActivityResult(
-            new ActivityResultContracts.RequestMultiplePermissions(), r -> actualizarUbicacion());
+            new ActivityResultContracts.RequestMultiplePermissions(), r -> {
+                Localizador.marcarPermisoPedido(requireContext());
+                actualizarUbicacion();
+            });
 
     @Nullable
     @Override
@@ -80,7 +84,12 @@ public class InicioClienteFragment extends Fragment {
         binding.btnRefrescarUbicacion.setOnClickListener(v -> actualizarUbicacion());
         binding.btnActivarUbicacion.setOnClickListener(v -> {
             if (Localizador.estado(requireContext()) == Localizador.Estado.SIN_PERMISO) {
-                permisoUbicacion.launch(Localizador.PERMISOS);
+                if (Localizador.permisoBloqueado(requireActivity())) {
+                    startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                            Uri.fromParts("package", requireContext().getPackageName(), null)));
+                } else {
+                    permisoUbicacion.launch(Localizador.PERMISOS);
+                }
             } else {
                 startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
             }
@@ -141,7 +150,13 @@ public class InicioClienteFragment extends Fragment {
         ultimoEstado = Localizador.estado(requireContext());
         if (ultimoEstado != Localizador.Estado.LISTO) detenerSeguimiento();
         if (ultimoEstado == Localizador.Estado.SIN_PERMISO) {
-            mostrarPanel(R.string.sin_permiso_titulo, R.string.sin_permiso_desc, R.string.permitir_ubicacion);
+            if (Localizador.permisoBloqueado(requireActivity())) {
+                mostrarPanel(R.string.sin_permiso_titulo, R.string.sin_permiso_bloqueado_desc,
+                        R.string.abrir_ajustes);
+            } else {
+                mostrarPanel(R.string.sin_permiso_titulo, R.string.sin_permiso_desc,
+                        R.string.permitir_ubicacion);
+            }
             binding.tvGpsChip.setText(R.string.ubicacion_no_disponible);
             binding.tvDireccionActual.setText(R.string.ubicacion_no_disponible);
             return;

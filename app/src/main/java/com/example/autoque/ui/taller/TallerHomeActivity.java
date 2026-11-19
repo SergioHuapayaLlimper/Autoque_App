@@ -1,9 +1,12 @@
 package com.example.autoque.ui.taller;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
@@ -11,6 +14,8 @@ import com.example.autoque.R;
 import com.example.autoque.databinding.ActivityTallerHomeBinding;
 import com.example.autoque.model.Usuario;
 import com.example.autoque.ui.BaseActivity;
+import com.example.autoque.util.AvisoSolicitudesTaller;
+import com.example.autoque.util.Notificaciones;
 
 public class TallerHomeActivity extends BaseActivity {
 
@@ -18,6 +23,9 @@ public class TallerHomeActivity extends BaseActivity {
     public static final String TAB_ATENCIONES = "atenciones";
 
     private ActivityTallerHomeBinding binding;
+
+    private final ActivityResultLauncher<String> permisoNotificaciones = registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(), concedido -> { });
 
     public static void abrirAtenciones(Context context) {
         Intent intent = new Intent(context, TallerHomeActivity.class);
@@ -32,6 +40,13 @@ public class TallerHomeActivity extends BaseActivity {
         if (!exigirRol(Usuario.ROL_TALLER)) return;
         binding = ActivityTallerHomeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        // HU05: el taller recibe un aviso cuando llega una solicitud nueva de su distrito
+        Notificaciones.crearCanalTalleres(this);
+        if (savedInstanceState == null && !Notificaciones.tienePermiso(this)) {
+            permisoNotificaciones.launch(Manifest.permission.POST_NOTIFICATIONS);
+        }
+        AvisoSolicitudesTaller.iniciar(this, session.getUid());
 
         binding.bottomNav.setOnItemSelectedListener(item -> {
             mostrar(item.getItemId());

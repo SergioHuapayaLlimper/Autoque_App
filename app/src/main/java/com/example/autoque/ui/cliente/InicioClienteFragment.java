@@ -26,6 +26,7 @@ import com.example.autoque.model.Resena;
 import com.example.autoque.model.Solicitud;
 import com.example.autoque.model.Taller;
 import com.example.autoque.ui.common.MiniMapa;
+import com.example.autoque.ui.common.TalleresEnMapa;
 import com.example.autoque.util.Geo;
 import com.example.autoque.util.Localizador;
 import com.example.autoque.util.SessionManager;
@@ -253,24 +254,8 @@ public class InicioClienteFragment extends Fragment {
 
     private void pintarTalleres() {
         if (binding == null) return;
-        List<MiniMapa.Lugar> lugares = new ArrayList<>();
-        for (Taller t : talleres) {
-            if (!t.tieneUbicacion() || t.getUid() == null) continue;
-            String detalle = t.getTotalResenas() > 0
-                    ? UiUtils.estrellas(t.promedio()) + " " + UiUtils.promedio(t.promedio())
-                    : getString(R.string.sin_calificaciones);
-            Double km = Geo.distanciaKm(latitud, longitud, t.getLatitud(), t.getLongitud());
-            if (km != null) detalle += " · " + Geo.formatearKm(km);
-            lugares.add(new MiniMapa.Lugar(t.getUid(), t.getNombreTaller(), detalle,
-                    t.getLatitud(), t.getLongitud()));
-        }
-        miniMapa.mostrarLugares(lugares, this::abrirPerfilTaller);
-    }
-
-    private void abrirPerfilTaller(String tallerUid) {
-        Intent intent = new Intent(requireContext(), PerfilTallerActivity.class);
-        intent.putExtra(PerfilTallerActivity.EXTRA_TALLER_UID, tallerUid);
-        startActivity(intent);
+        miniMapa.mostrarLugares(TalleresEnMapa.lugares(requireContext(), talleres, latitud, longitud),
+                uid -> TalleresEnMapa.abrirPerfil(requireContext(), uid));
     }
 
     private void mostrarActiva(List<Solicitud> lista) {

@@ -11,7 +11,6 @@ import com.example.autoque.model.Taller;
 import com.example.autoque.model.Usuario;
 import com.example.autoque.ui.BaseActivity;
 import com.example.autoque.ui.common.FormularioTaller;
-import com.example.autoque.util.Ubicaciones;
 import com.google.android.material.snackbar.Snackbar;
 
 public class EditarTallerActivity extends BaseActivity {
@@ -62,10 +61,22 @@ public class EditarTallerActivity extends BaseActivity {
         boolean cambioUbicacion = !editado.getDireccion().equals(original.getDireccion())
                 || !editado.getDistrito().equals(original.getDistrito());
         if (cambioUbicacion || !original.tieneUbicacion()) {
-            Ubicaciones.geocodificar(this, editado.getDireccion(), editado.getDistrito(), (lat, lon) -> {
-                editado.setLatitud(lat != null ? lat : (cambioUbicacion ? null : original.getLatitud()));
-                editado.setLongitud(lon != null ? lon : (cambioUbicacion ? null : original.getLongitud()));
-                enviar(editado);
+            formulario.validarUbicacion(editado, new FormularioTaller.AlValidarUbicacion() {
+                @Override
+                public void onValida(Taller valido, boolean sinServicio) {
+                    if (isFinishing()) return;
+                    if (sinServicio && !cambioUbicacion) {
+                        valido.setLatitud(original.getLatitud());
+                        valido.setLongitud(original.getLongitud());
+                    }
+                    enviar(valido);
+                }
+
+                @Override
+                public void onInvalida() {
+                    if (isFinishing()) return;
+                    cargando(binding.btnGuardar, false, R.string.guardar_cambios);
+                }
             });
         } else {
             editado.setLatitud(original.getLatitud());

@@ -8,6 +8,7 @@ import android.widget.TextView;
 import com.example.autoque.R;
 import com.example.autoque.model.Catalogos;
 import com.example.autoque.model.Taller;
+import com.example.autoque.util.Ubicaciones;
 import com.example.autoque.util.Validaciones;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
@@ -17,6 +18,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FormularioTaller {
+
+    public interface AlValidarUbicacion {
+        /** La direccion es valida: el taller ya tiene sus coordenadas (o null si no hubo servicio). */
+        void onValida(Taller taller, boolean sinServicio);
+
+        /** La direccion no existe o es de otro distrito: el error ya se muestra en el campo. */
+        void onInvalida();
+    }
 
     private final Context context;
     private final TextInputLayout tilNombreTaller;
@@ -81,6 +90,37 @@ public class FormularioTaller {
         for (MaterialCheckBox c : checks) {
             c.setChecked(t.getServicios() != null && t.getServicios().contains(c.getText().toString()));
         }
+    }
+
+    /**
+     * Valida de forma estricta que la direccion del taller exista y pertenezca a su distrito.
+     * Si es valida, guarda sus coordenadas en el taller para mostrarlo en el mapa del cliente.
+     */
+    public void validarUbicacion(Taller taller, AlValidarUbicacion cb) {
+        Ubicaciones.validar(context, taller.getDireccion(), taller.getDistrito(), v -> {
+            switch (v.estado) {
+                case VALIDA:
+                    taller.setLatitud(v.latitud);
+                    taller.setLongitud(v.longitud);
+                    cb.onValida(taller, false);
+                    break;
+                case OTRO_DISTRITO:
+                    tilDistrito.setError(context.getString(R.string.dir_otro_distrito,
+                            v.distritoEncontrado, taller.getDistrito()));
+                    cb.onInvalida();
+                    break;
+                case NO_ENCONTRADA:
+                    tilDireccion.setError(context.getString(R.string.dir_no_encontrada,
+                            taller.getDistrito()));
+                    cb.onInvalida();
+                    break;
+                default:
+                    // Sin internet o sin servicio de direcciones: no se bloquea el registro
+                    taller.setLatitud(null);
+                    taller.setLongitud(null);
+                    cb.onValida(taller, true);
+            }
+        });
     }
 
     public Taller leerValidado() {

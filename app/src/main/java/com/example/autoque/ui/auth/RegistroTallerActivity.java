@@ -9,7 +9,6 @@ import com.example.autoque.model.Usuario;
 import com.example.autoque.ui.BaseActivity;
 import com.example.autoque.ui.MainActivity;
 import com.example.autoque.ui.common.FormularioTaller;
-import com.example.autoque.util.Ubicaciones;
 import com.example.autoque.util.Validaciones;
 
 public class RegistroTallerActivity extends BaseActivity {
@@ -58,17 +57,27 @@ public class RegistroTallerActivity extends BaseActivity {
                 taller.getTelefono(), taller.getEmail());
 
         cargando(binding.btnRegistrar, true, R.string.registrar_taller);
-        Ubicaciones.geocodificar(this, taller.getDireccion(), taller.getDistrito(), (lat, lon) -> {
-            if (isFinishing()) return;
-            taller.setLatitud(lat);
-            taller.setLongitud(lon);
-            RegistroConFirebase.registrar(this, binding.btnRegistrar, R.string.registrar_taller,
-                    binding.tilEmail, binding.tilPassword, usuario, taller, password, registrado -> {
-                        RegistroConFirebase.bienvenida(this, R.string.taller_registrado);
-                        session.iniciar(registrado);
-                        MainActivity.abrirMenuPrincipal(this, registrado.getRol());
-                        finish();
-                    });
+        formulario.validarUbicacion(taller, new FormularioTaller.AlValidarUbicacion() {
+            @Override
+            public void onValida(Taller valido, boolean sinServicio) {
+                if (isFinishing()) return;
+                RegistroConFirebase.registrar(RegistroTallerActivity.this, binding.btnRegistrar,
+                        R.string.registrar_taller, binding.tilEmail, binding.tilPassword, usuario,
+                        valido, password, registrado -> {
+                            RegistroConFirebase.bienvenida(RegistroTallerActivity.this,
+                                    R.string.taller_registrado);
+                            session.iniciar(registrado);
+                            MainActivity.abrirMenuPrincipal(RegistroTallerActivity.this,
+                                    registrado.getRol());
+                            finish();
+                        });
+            }
+
+            @Override
+            public void onInvalida() {
+                if (isFinishing()) return;
+                cargando(binding.btnRegistrar, false, R.string.registrar_taller);
+            }
         });
     }
 }

@@ -18,11 +18,13 @@ import androidx.fragment.app.Fragment;
 
 import com.example.autoque.R;
 import com.example.autoque.data.Escucha;
+import com.example.autoque.data.PerfilRepository;
 import com.example.autoque.data.ResenaRepository;
 import com.example.autoque.data.SolicitudRepository;
 import com.example.autoque.databinding.FragmentInicioClienteBinding;
 import com.example.autoque.model.Resena;
 import com.example.autoque.model.Solicitud;
+import com.example.autoque.model.Taller;
 import com.example.autoque.ui.common.MiniMapa;
 import com.example.autoque.util.Geo;
 import com.example.autoque.util.Localizador;
@@ -31,6 +33,7 @@ import com.example.autoque.util.UiUtils;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.ListenerRegistration;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -41,6 +44,9 @@ public class InicioClienteFragment extends Fragment {
     private SessionManager session;
     private ListenerRegistration escuchaSolicitudes;
     private ListenerRegistration escuchaResenas;
+    private ListenerRegistration escuchaTalleres;
+    private String distritoTalleres;
+    private List<Taller> talleres = new ArrayList<>();
     private static final double DISTANCIA_REGEOCODIFICAR_KM = 0.05;
 
     private CancellationSignal cancelarUbicacion;
@@ -74,6 +80,7 @@ public class InicioClienteFragment extends Fragment {
         session = new SessionManager(requireContext());
         miniMapa = new MiniMapa(binding.mapa);
         pinMostrado = false;
+        distritoTalleres = null;
         latitudGeocodificada = null;
         longitudGeocodificada = null;
         String nombre = session.getNombre();
@@ -138,6 +145,7 @@ public class InicioClienteFragment extends Fragment {
     public void onDestroyView() {
         if (escuchaSolicitudes != null) escuchaSolicitudes.remove();
         if (escuchaResenas != null) escuchaResenas.remove();
+        if (escuchaTalleres != null) escuchaTalleres.remove();
         if (cancelarUbicacion != null) cancelarUbicacion.cancel();
         detenerSeguimiento();
         miniMapa.onDestroy();
@@ -226,7 +234,43 @@ public class InicioClienteFragment extends Fragment {
             StringBuilder texto = new StringBuilder(dir != null ? dir : "");
             if (dist != null) texto.append(texto.length() > 0 ? ", " : "").append(dist);
             if (texto.length() > 0) binding.tvDireccionActual.setText(texto);
+            if (dist != null && !dist.equals(distritoTalleres)) escucharTalleres(dist);
         });
+    }
+
+    /** Talleres cercanos: muestra en el mapa los talleres del distrito donde esta el cliente. */
+    private void escucharTalleres(String dist) {
+        if (escuchaTalleres != null) escuchaTalleres.remove();
+        distritoTalleres = dist;
+        escuchaTalleres = new PerfilRepository().escucharTalleresDelDistrito(dist, new Escucha<>() {
+            @Override
+            public void onCambio(List<Taller> lista) {
+                talleres = lista;
+                pintarTalleres();
+            }
+        });
+    }
+
+    private void pintarTalleres() {
+        if (binding == null) return;
+        List<MiniMapa.Lugar> lugares = new ArrayList<>();
+        for (Taller t : talleres) {
+            if (!t.tieneUbicacion() || t.getUid() == null) continue;
+            String detalle = t.getTotalResenas() > 0
+                    ? UiUtils.estrellas(t.promedio()) + " " + UiUtils.promedio(t.promedio())
+                    : getString(R.string.sin_calificaciones);
+            Double km = Geo.distanciaKm(latitud, longitud, t.getLatitud(), t.getLongitud());
+            if (km != null) detalle += " · " + Geo.formatearKm(km);
+            lugares.add(new MiniMapa.Lugar(t.getUid(), t.getNombreTaller(), detalle,
+                    t.getLatitud(), t.getLongitud()));
+        }
+        miniMapa.mostrarLugares(lugares, this::abrirPerfilTaller);
+    }
+
+    private void abrirPerfilTaller(String tallerUid) {
+        Intent intent = new Intent(requireContext(), PerfilTallerActivity.class);
+        intent.putExtra(PerfilTallerActivity.EXTRA_TALLER_UID, tallerUid);
+        startActivity(intent);
     }
 
     private void mostrarActiva(List<Solicitud> lista) {

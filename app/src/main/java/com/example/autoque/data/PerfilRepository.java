@@ -68,6 +68,19 @@ public class PerfilRepository {
         });
     }
 
+    /** Talleres registrados en un distrito, en tiempo real (para mostrarlos en el mapa). */
+    public ListenerRegistration escucharTalleresDelDistrito(String distrito,
+                                                            Escucha<List<Taller>> escucha) {
+        return db.collection(TALLERES).whereEqualTo("distrito", distrito)
+                .addSnapshotListener((snap, e) -> {
+                    if (e != null) {
+                        escucha.onError(Errores.mensaje(e));
+                    } else if (snap != null) {
+                        escucha.onCambio(snap.toObjects(Taller.class));
+                    }
+                });
+    }
+
     public ListenerRegistration escucharTaller(String uid, Escucha<Taller> escucha) {
         return tallerRef(uid).addSnapshotListener((doc, e) -> {
             if (e != null) {

@@ -28,6 +28,27 @@ import java.util.List;
  */
 public class MiniMapa {
 
+    /** Punto secundario del mapa (por ejemplo, un taller) con su burbuja de informacion. */
+    public static class Lugar {
+        final String id;
+        final String titulo;
+        final String detalle;
+        final double latitud;
+        final double longitud;
+
+        public Lugar(String id, String titulo, String detalle, double latitud, double longitud) {
+            this.id = id;
+            this.titulo = titulo;
+            this.detalle = detalle;
+            this.latitud = latitud;
+            this.longitud = longitud;
+        }
+    }
+
+    public interface AlTocarLugar {
+        void onTocar(String id);
+    }
+
     private static final LatLng LIMA = new LatLng(-12.0464, -77.0428);
     private static final float ZOOM_CIUDAD = 12f;
     private static final float ZOOM_PUNTO = 16f;
@@ -36,6 +57,9 @@ public class MiniMapa {
     private final MapView mapa;
     private final List<LatLng> puntos = new ArrayList<>();
     private final List<Runnable> pendientes = new ArrayList<>();
+    private final List<Marker> marcadoresLugares = new ArrayList<>();
+    private final List<LatLng> puntosLugares = new ArrayList<>();
+    private AlTocarLugar alTocarLugar;
     private GoogleMap googleMap;
     private Marker principal;
     private int indicePrincipal = -1;
@@ -54,6 +78,10 @@ public class MiniMapa {
         map.getUiSettings().setZoomControlsEnabled(false);
         map.getUiSettings().setCompassEnabled(false);
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(LIMA, ZOOM_CIUDAD));
+        map.setOnInfoWindowClickListener(marcador -> {
+            Object id = marcador.getTag();
+            if (id instanceof String && alTocarLugar != null) alTocarLugar.onTocar((String) id);
+        });
         for (Runnable r : pendientes) r.run();
         pendientes.clear();
     }
@@ -69,6 +97,8 @@ public class MiniMapa {
             puntos.clear();
             principal = null;
             indicePrincipal = -1;
+            marcadoresLugares.clear();
+            puntosLugares.clear();
         });
     }
 
@@ -104,11 +134,41 @@ public class MiniMapa {
             if (indicePrincipal >= 0 && indicePrincipal < puntos.size()) {
                 puntos.set(indicePrincipal, punto);
             }
-            if (puntos.size() == 1) {
+            // Si hay talleres en el mapa, solo se mueve el pin para no perder la vista general
+            if (puntos.size() == 1 && puntosLugares.isEmpty()) {
                 googleMap.animateCamera(CameraUpdateFactory.newLatLng(punto));
-            } else {
+            } else if (puntosLugares.isEmpty()) {
                 encuadrar();
             }
+        });
+    }
+
+    /**
+     * Dibuja (o reemplaza) los pines secundarios, como los talleres cercanos. Al tocar la
+     * burbuja de un pin se llama a alTocar con su id.
+     */
+    public void mostrarLugares(List<Lugar> lugares, AlTocarLugar alTocar) {
+        cuandoEsteListo(() -> {
+            alTocarLugar = alTocar;
+            boolean primeraVez = marcadoresLugares.isEmpty();
+            for (Marker m : marcadoresLugares) m.remove();
+            marcadoresLugares.clear();
+            puntosLugares.clear();
+            for (Lugar l : lugares) {
+                LatLng punto = new LatLng(l.latitud, l.longitud);
+                Marker m = googleMap.addMarker(new MarkerOptions()
+                        .position(punto)
+                        .title(l.titulo)
+                        .snippet(l.detalle)
+                        .anchor(0.5f, 1f)
+                        .icon(icono(false)));
+                if (m != null) {
+                    m.setTag(l.id);
+                    marcadoresLugares.add(m);
+                    puntosLugares.add(punto);
+                }
+            }
+            if (primeraVez && !puntosLugares.isEmpty()) encuadrar();
         });
     }
 
@@ -125,11 +185,13 @@ public class MiniMapa {
     }
 
     private void encuadrar() {
-        if (puntos.size() == 1) {
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(puntos.get(0), ZOOM_PUNTO));
-        } else if (puntos.size() > 1) {
+        List<LatLng> todos = new ArrayList<>(puntos);
+        todos.addAll(puntosLugares);
+        if (todos.size() == 1) {
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(todos.get(0), ZOOM_PUNTO));
+        } else if (todos.size() > 1) {
             LatLngBounds.Builder caja = new LatLngBounds.Builder();
-            for (LatLng p : puntos) caja.include(p);
+            for (LatLng p : todos) caja.include(p);
             int padding = (int) (PADDING_DP * mapa.getResources().getDisplayMetrics().density);
             Runnable mover = () -> {
                 if (googleMap == null || destruido) return;
